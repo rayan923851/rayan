@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahma la boss</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pink-light:#ffe4ec;
+    --pink-medium:#ffc2d6;
+    --pink-strong:#ff8fb3;
+    --gold:#e8c988;
+    --red-tender:#ff6f91;
+    --white:#fffafc;
+  }
+
+  * { box-sizing: border-box; margin:0; padding:0; }
+
+  html,body{
+    height:100%;
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, var(--pink-light), var(--white) 60%, var(--pink-medium));
+    overflow-x:hidden;
+    color:#7a4b5a;
+  }
+
+  /* ---------- Cœurs flottants en arrière-plan ---------- */
+  .hearts-bg{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .heart{
+    position:absolute;
+    bottom:-10%;
+    font-size:20px;
+    color: var(--pink-strong);
+    opacity:0.6;
+    animation: floatUp linear infinite;
+    user-select:none;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.7; }
+    100%{ transform: translateY(-110vh) rotate(360deg); opacity:0; }
+  }
+
+  /* ---------- Conteneur général ---------- */
+  .screen{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    transition: opacity 1s ease;
+  }
+
+  /* ---------- Page de connexion ---------- */
+  #login-screen{
+    position:fixed;
+    top:0;left:0;
+    width:100%; height:100%;
+  }
+
+  .login-box{
+    background: var(--white);
+    border-radius: 30px;
+    padding:45px 35px;
+    max-width:400px;
+    width:90%;
+    text-align:center;
+    box-shadow: 0 15px 35px rgba(255, 143, 179, 0.35);
+    border: 2px solid var(--pink-medium);
+    position:relative;
+  }
+
+  .login-box .icon-heart{
+    font-size:45px;
+    margin-bottom:10px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse{
+    0%,100%{ transform: scale(1); }
+    50%{ transform: scale(1.15); }
+  }
+
+  .login-box h1{
+    font-family:'Poppins', sans-serif;
+    font-weight:600;
+    font-size:1.5rem;
+    color: var(--red-tender);
+    margin-bottom:8px;
+  }
+
+  .login-box p.subtitle{
+    font-size:0.95rem;
+    color:#a97690;
+    margin-bottom:25px;
+  }
+
+  .login-box input[type="password"]{
+    width:100%;
+    padding:14px 18px;
+    border-radius:20px;
+    border:2px solid var(--pink-medium);
+    outline:none;
+    font-family:'Quicksand', sans-serif;
+    font-size:1rem;
+    text-align:center;
+    background: #fff5f8;
+    color:#7a4b5a;
+    transition: border-color 0.3s ease;
+  }
+
+  .login-box input[type="password"]:focus{
+    border-color: var(--red-tender);
+  }
+
+  .login-box button{
+    margin-top:18px;
+    padding:12px 30px;
+    border:none;
+    border-radius:20px;
+    background: linear-gradient(135deg, var(--pink-strong), var(--red-tender));
+    color:white;
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    cursor:pointer;
+    box-shadow: 0 6px 15px rgba(255, 111, 145, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .login-box button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 111, 145, 0.55);
+  }
+
+  .error-msg{
+    margin-top:15px;
+    color:#e0507a;
+    font-size:0.9rem;
+    font-weight:600;
+    min-height:20px;
+  }
+
+  .hint-btn{
+    margin-top:10px;
+    background:transparent !important;
+    color: var(--red-tender) !important;
+    border:2px solid var(--pink-strong) !important;
+    box-shadow:none !important;
+    display:none;
+  }
+
+  .hint-text, .reveal-text{
+    margin-top:14px;
+    font-size:0.9rem;
+    font-style:italic;
+    color:#a97690;
+    display:none;
+  }
+
+  .reveal-text{
+    font-weight:700;
+    font-style:normal;
+    color: var(--red-tender);
+    background: var(--pink-light);
+    border-radius:12px;
+    padding:8px;
+  }
+
+  /* petites décorations autour de la boîte login */
+  .deco{
+    position:absolute;
+    font-size:22px;
+    opacity:0.8;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  .deco.tl{ top:-15px; left:-15px; }
+  .deco.br{ bottom:-15px; right:-15px; }
+  @keyframes sparkle{
+    0%,100%{ opacity:0.4; transform:scale(0.9) rotate(0deg); }
+    50%{ opacity:1; transform:scale(1.2) rotate(15deg); }
+  }
+
+  /* ---------- Page principale : la lettre ---------- */
+  #main-screen{
+    display:none;
+    opacity:0;
+  }
+
+  .letter-wrapper{
+    max-width:650px;
+    width:100%;
+    position:relative;
+  }
+
+  .envelope-flap{
+    text-align:center;
+    font-size:14px;
+    color:var(--pink-strong);
+    letter-spacing:2px;
+    margin-bottom:-15px;
+    position:relative;
+    z-index:2;
+  }
+
+  .letter{
+    background: var(--white);
+    border-radius: 25px;
+    padding:45px 40px;
+    box-shadow: 0 20px 45px rgba(255, 143, 179, 0.3);
+    border: 2px dashed var(--pink-strong);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .letter::before, .letter::after{
+    content:"✨";
+    position:absolute;
+    font-size:24px;
+    opacity:0.6;
+  }
+  .letter::before{ top:15px; left:15px; }
+  .letter::after{ bottom:15px; right:15px; }
+
+  .letter h2{
+    font-family:'Poppins', sans-serif;
+    text-align:center;
+    color: var(--red-tender);
+    font-size:1.8rem;
+    margin-bottom:5px;
+  }
+
+  .letter .date-tag{
+    text-align:center;
+    color: var(--gold);
+    font-weight:600;
+    margin-bottom:25px;
+    font-size:0.95rem;
+  }
+
+  .letter p{
+    font-size:1.05rem;
+    line-height:1.9;
+    margin-bottom:16px;
+    color:#8a5468;
+  }
+
+  .letter .signature{
+    text-align:right;
+    font-family:'Poppins', sans-serif;
+    font-style:italic;
+    color: var(--red-tender);
+    margin-top:25px;
+    font-size:1.1rem;
+  }
+
+  .stars-row{
+    text-align:center;
+    margin:20px 0;
+    font-size:20px;
+    letter-spacing:10px;
+    color: var(--gold);
+  }
+
+  .footer-note{
+    text-align:center;
+    margin-top:25px;
+    font-size:0.85rem;
+    color:#c98ba3;
+  }
+
+  @media (max-width:480px){
+    .letter{ padding:30px 22px; }
+    .letter h2{ font-size:1.4rem; }
+    .letter p{ font-size:0.95rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Fond animé avec des cœurs flottants -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- ===================== ÉTAPE 1 : PAGE DE CONNEXION ===================== -->
+<div class="screen" id="login-screen">
+  <div class="login-box">
+    <div class="deco tl">💖</div>
+    <div class="deco br">💫</div>
+
+    <div class="icon-heart">💕</div>
+    <h1>Accès secret</h1>
+    <p class="subtitle">Entre le mot de passe.</p>
+
+    <input type="password" id="passwordInput" placeholder="Mot de passe...">
+    <br>
+    <button onclick="checkPassword()">Valider 💌</button>
+    <br>
+    <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Indice</button>
+
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="hint-text" id="hintText">Indice : c'est qui le boss ?</div>
+    <div class="reveal-text" id="revealText"></div>
+  </div>
+</div>
+
+<div class="screen" id="main-screen">
+  <div class="letter-wrapper">
+    <div class="envelope-flap">— ✉️ 𝑝𝑜𝑢𝑟 𝑚𝑎 copine la boss ✉️ —</div>
+    <div class="letter">
+      <h2>Ma copine la boss</h2>
+      <div class="date-tag">🌸 1er Août — Fête des copines (je n'ai pas du tout été forcé) 🌸</div>
+
+      <p>Coucou mon coeur </p>
+
+      <p>Aujourd'hui c'est le 1er Août et du coup je t'écris cette petite lettre qui j'espère te feras beaucoup plaisir</p>
+
+      <p>Je voulais te dire que depuis que tu es rentré dans ma vie tu m'apportes beaucoup de joie, de douceur et énormement de bonheur malgré le fait qu'on puisse s'embrouiller quelques fois mais je t'en veux pas mon amour j'en suis très reconnaissant des efforts que tu fournis et je le remarque</p>
+
+      <div class="stars-row">⋆｡°✩ ⋆｡°✩ ⋆｡°✩</div>
+
+      <p>Merci d'être là avec moi tout le temps malgré le fait que je suis pas parfait merci pour tous les bons moments comme les plus difficiles je te remercirai jamais assez</p>
+
+      <p>Je veux que tu saches que je suis très fier de toi et encore plus de t'avoir avec moi parce que t'es la femme parfaite à mes yeux et tu comptes énormement pour moi Rahma</p>
+
+      <p>Je voulais aussi te dire que je te trouvais très très belle malgré le quiproquo de la dernière fois et je m'en excuse mais c'est pas la peine de te cacher et d'arriver au point de ne plus du tout m'envoyer de snap parce que je trouve ça un peu trop dommage mais bon j'attendrai malgré tout quand tu seras assez prête pour m'envoyer des snap même voilà ça me ferait beaucoup plaisir</p>
+      
+      <p>Sache aussi que je ne t'oublierai jamais et que je penserai fort à toi je continuerai quand même à t'envoyer des messages pendant que t'es en Indonésie mais pas de garçons ok?? moi je te le promets je parlerai à aucune fille</p>
+      
+      <p>Je t'aime très fort mon coeur je pense fort à toi et j'espère que t'es contente de ma lettre bisous je t'embrasse très fort Rahma</p>
+      <div class="signature">tiens des coeurs ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</div>
+    </div>
+    <div class="footer-note">— rayan le bosssssssssssssss —</div>
+  </div>
+</div>
+
+<script>
+  /* ---------- Génération des cœurs flottants en arrière-plan ---------- */
+  const heartsBg = document.getElementById('heartsBg');
+  const heartSymbols = ['💗','💕','💖','💓','🩷','❤️'];
+
+  function createHeart(){
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+    heart.style.left = Math.random() * 100 + '%';
+    const size = 14 + Math.random() * 22;
+    heart.style.fontSize = size + 'px';
+    const duration = 8 + Math.random() * 10;
+    heart.style.animationDuration = duration + 's';
+    heartsBg.appendChild(heart);
+
+    setTimeout(() => heart.remove(), duration * 1000);
+  }
+
+  // Crée un cœur régulièrement
+  setInterval(createHeart, 500);
+  // Quelques cœurs dès le chargement
+  for(let i=0; i<15; i++){
+    setTimeout(createHeart, i * 200);
+  }
+
+  /* ---------- Logique du mot de passe ---------- */
+  const CORRECT_PASSWORD = "Rayanlebossleplusbeau";
+  let attemptCount = 0;
+
+  const passwordInput = document.getElementById('passwordInput');
+  const errorMsg = document.getElementById('errorMsg');
+  const hintBtn = document.getElementById('hintBtn');
+  const hintText = document.getElementById('hintText');
+  const revealText = document.getElementById('revealText');
+
+  function checkPassword(){
+    const value = passwordInput.value.trim();
+
+    if(value === CORRECT_PASSWORD){
+      unlockSite();
+      return;
+    }
+
+    attemptCount++;
+
+    if(attemptCount === 1){
+      errorMsg.textContent = "C'est pas le bon mot de passe réfléchis 2sec chamelle";
+      hintBtn.style.display = "inline-block";
+    } else if(attemptCount >= 2){
+      errorMsg.textContent = "Pas grave je t'aide comme dab :";
+      revealText.textContent = "Le mot de passe est : " + CORRECT_PASSWORD;
+      revealText.style.display = "block";
+    }
+  }
+
+  function showHint(){
+    hintText.style.display = "block";
+  }
+
+  // Permet de valider avec la touche Entrée
+  passwordInput.addEventListener('keyup', function(e){
+    if(e.key === 'Enter'){
+      checkPassword();
+    }
+  });
+
+  /* ---------- Transition vers la page principale ---------- */
+  function unlockSite(){
+    const loginScreen = document.getElementById('login-screen');
+    const mainScreen = document.getElementById('main-screen');
+
+    loginScreen.style.opacity = '0';
+
+    setTimeout(() => {
+      loginScreen.style.display = 'none';
+      mainScreen.style.display = 'flex';
+      // petit délai pour déclencher la transition CSS
+      requestAnimationFrame(() => {
+        mainScreen.style.opacity = '1';
+      });
+    }, 900);
+  }
+</script>
+
